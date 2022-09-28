@@ -1,6 +1,8 @@
 package com.ragnarzone.recipeproject.controllers;
 
 import com.ragnarzone.recipeproject.commands.IngredientCommand;
+import com.ragnarzone.recipeproject.commands.RecipeCommand;
+import com.ragnarzone.recipeproject.commands.UnitOfMeasureCommand;
 import com.ragnarzone.recipeproject.services.IngredientService;
 import com.ragnarzone.recipeproject.services.RecipeService;
 import com.ragnarzone.recipeproject.services.UnitOfMeasureService;
@@ -39,6 +41,26 @@ public class IngredientController {
                 ingredientService.findByRecipeIdAndIngredientId(recipeId,ingredientId));
 
         return "recipe/ingredient/show";
+    }
+
+    @GetMapping
+    @RequestMapping("recipe/{recipeId}/ingredient/new")
+    public String newIngredient(@PathVariable Long recipeId, Model model){
+
+        //make sure we have a good id value
+        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        //todo rise exception if null
+
+        //need to return back parent id for hidden form property
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(recipeId);
+        model.addAttribute("ingredient", ingredientCommand);
+
+        //init uom
+        ingredientCommand.setUom(new UnitOfMeasureCommand());
+        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+
+        return "recipe/ingredient/ingredientform";
     }
 
     @GetMapping
